@@ -3,11 +3,14 @@ package com.example.nasande;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.nasande.retrofit.SharedPrefManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,11 +19,18 @@ public class MainActivity extends AppCompatActivity {
     private Button reset_num;
     private static String network = "MobileMoney";
     private static Context appContext;
+    SharedPrefManager sharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sharedPrefManager = new SharedPrefManager(this);
+        if (!sharedPrefManager.getSPIsLoggedIn()) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
         mainInstance = this;
         appContext = getApplicationContext();
 
