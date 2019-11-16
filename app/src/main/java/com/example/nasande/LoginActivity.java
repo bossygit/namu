@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.nasande.model.LoginData;
 import com.example.nasande.retrofit.ApiService;
 import com.example.nasande.retrofit.SharedPrefManager;
+import com.example.nasande.retrofit.UtilsApi;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +36,28 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        sharedPrefManager = new SharedPrefManager(this);
+        if (sharedPrefManager.getSPIsLoggedIn()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        mEmailView = findViewById(R.id.email);
+        mPasswordView = findViewById(R.id.password);
+        sharedPrefManager = new SharedPrefManager(LoginActivity.this);
+        mApiService = UtilsApi.getAPIService();
+        Button mEmailSignInButton = findViewById(R.id.login);
+
+        mEmailSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                attemptLogin();
+            }
+        });
+
+        mProgressView = findViewById(R.id.login_progress);
     }
 
     private void attemptLogin() {

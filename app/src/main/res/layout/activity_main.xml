@@ -15,15 +15,8 @@
         android:layout_height="wrap_content"
         android:text="Bienvenu(e)!" />
 
-    <EditText
-        android:id="@+id/debug_num"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="phone" />
-
     <Button
-        android:id="@+id/reset_num"
+        android:id="@+id/btn_upload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Reset" />
