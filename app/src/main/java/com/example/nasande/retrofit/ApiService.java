@@ -2,6 +2,7 @@ package com.example.nasande.retrofit;
 
 import com.example.nasande.model.LoginData;
 
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -22,7 +23,7 @@ public interface ApiService {
 
     @Multipart
     @POST ("file/upload/node/article/field_image?_format=json")
-    Call<ResponseBody> postFile (@Header("Authorization") String authorization,@Header("X-CSRF-Token") String x_csrf_token,  @Part("file\"; filename=\"pp.png\" ") RequestBody file);
+    Call<ResponseBody> postFile (@Header("Authorization") String authorization,@Header("X-CSRF-Token") String x_csrf_token,  @Part MultipartBody.Part file);
 	
 	//@POST("file/upload/node/article/field_image?_format=hal_json")
 	//Call<ResponseBody> addNode(@Header("Authorization") String user_auth, @Header("X-CSRF-Token") String x_csrf_token, @Body Node node);

@@ -1,5 +1,6 @@
 package com.example.nasande;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,16 +10,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.nasande.retrofit.ApiService;
 import com.example.nasande.retrofit.SharedPrefManager;
+import com.example.nasande.retrofit.UtilsApi;
+import com.example.nasande.utils.FileUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static Context appContext;
     SharedPrefManager sharedPrefManager;
     ApiService mApiService;
+    private View mProgressView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         appContext = getApplicationContext();
 
         btn_upload = findViewById(R.id.btn_upload);
+        mProgressView = findViewById(R.id.upload_progress);
 
         btn_upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,11 +109,51 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void fileUpload(Uri uri){
         String basic_auth = sharedPrefManager.getSPBasicAuth();
         String csrf_token = sharedPrefManager.getSPCsrfToken();
-       //TODO RequestBody filePart = RequestBody.create()
-        // TODO mApiService.postFile(basic_auth,csrf_token,);
+        File theFile = FileUtils.getFile(this,uri);
+       RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(uri)),
+               theFile);
+
+        MultipartBody.Part file = MultipartBody.Part.createFormData("image_field",theFile.getName(),filePart);
+
+        mApiService = UtilsApi.getAPIService();
+
+       Call<ResponseBody> call = mApiService.postFile(basic_auth,csrf_token,file);
+
+       call.enqueue(new Callback<ResponseBody>() {
+           @Override
+           public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+               if (response.isSuccessful()) {
+                   mProgressView.setVisibility(View.GONE);
+                   try {
+                       JSONObject jsonRESULTS = new JSONObject(response.body().string());
+                       if (!jsonRESULTS.getString("fid").isEmpty()) {
+                           String fid = jsonRESULTS.getString("fid");
+                           Toast.makeText(MainActivity.this, "Image id : "+ fid, Toast.LENGTH_SHORT).show();
+
+                       } else {
+                           String error_message = jsonRESULTS.getString("error_msg");
+                           Toast.makeText(MainActivity.this, error_message, Toast.LENGTH_SHORT).show();
+                       }
+                   } catch (JSONException e) {
+                       e.printStackTrace();
+                   } catch (IOException e) {
+                       e.printStackTrace();
+                   }
+               } else {
+                   mProgressView.setVisibility(View.GONE);
+               }
+           }
+
+           @Override
+           public void onFailure(Call<ResponseBody> call, Throwable t) {
+               Log.e("debug", "onFailure: ERROR > " + t.toString());
+               mProgressView.setVisibility(View.GONE);
+           }
+       });
 
     }
 

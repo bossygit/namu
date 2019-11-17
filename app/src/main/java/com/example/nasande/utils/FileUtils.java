@@ -1,5 +1,3 @@
-
-
 package com.example.nasande.utils;
 
 
@@ -17,6 +15,8 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+
+import androidx.annotation.RequiresApi;
 
 import com.ianhanniballake.localstorage.LocalStorageProvider;
 
@@ -141,6 +141,7 @@ public class FileUtils {
     /**
      * @return The MIME type for the give Uri.
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String getMimeType(Context context, Uri uri) {
         File file = new File(getPath(context, uri));
         return getMimeType(file);
@@ -151,6 +152,7 @@ public class FileUtils {
      * @return Whether the Uri authority is {@link LocalStorageProvider}.
      * @author paulburke
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static boolean isLocalStorageDocument(Uri uri) {
         return LocalStorageProvider.AUTHORITY.equals(uri.getAuthority());
     }
@@ -241,6 +243,7 @@ public class FileUtils {
      * @see #getFile(Context, Uri)
      * @author paulburke
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
 
         if (DEBUG)
@@ -332,6 +335,7 @@ public class FileUtils {
      * @see #getPath(Context, Uri)
      * @author paulburke
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static File getFile(Context context, Uri uri) {
         if (uri != null) {
             String path = getPath(context, uri);
@@ -395,6 +399,7 @@ public class FileUtils {
      * @return
      * @author paulburke
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public static Bitmap getThumbnail(Context context, Uri uri) {
         return getThumbnail(context, uri, getMimeType(context, uri));
     }
