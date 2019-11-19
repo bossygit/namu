@@ -114,10 +114,14 @@ public class MainActivity extends AppCompatActivity {
         String basic_auth = sharedPrefManager.getSPBasicAuth();
         String csrf_token = sharedPrefManager.getSPCsrfToken();
         File theFile = FileUtils.getFile(this,uri);
+        /*
        RequestBody filePart = RequestBody.create(MediaType.parse(getContentResolver().getType(uri)),
                theFile);
+               */
+        RequestBody file = RequestBody.create(MediaType.parse("application/octet-stream"), theFile);
+        
 
-        MultipartBody.Part file = MultipartBody.Part.createFormData("image_field",theFile.getName(),filePart);
+       // MultipartBody.Part file = MultipartBody.Part.createFormData("image_field",theFile.getName(),filePart);
 
         mApiService = UtilsApi.getAPIService();
 
